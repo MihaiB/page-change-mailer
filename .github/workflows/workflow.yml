@@ -1,0 +1,18 @@
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: step
+        run: docker build --pull --force-rm .
+
+name: workflow
+
+'on':
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  schedule:
+    # generated randomly
+    - cron: '19 19 * * SUN'
