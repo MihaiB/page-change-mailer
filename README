@@ -1,0 +1,6 @@
+Fetch a webpage regularly and send an email when it changes.
+
+Use with caution: there are no guarantees about behavior in all cases.
+Just a few examples:
+A resulting email message might be invalid or malicious (injected).
+There are no limits on webpage size or transmission duration.
