@@ -8,4 +8,13 @@ SCRIPT_DIR=`dirname "$SCRIPT"`
 cd "$SCRIPT_DIR"
 unset SCRIPT SCRIPT_DIR
 
-go version
+GOFMT_OUTPUT=`gofmt -l -s .`
+if [ -n "$GOFMT_OUTPUT" ]; then
+	gofmt -d -s .
+	false
+fi
+unset GOFMT_OUTPUT
+
+go vet ./...
+go test ./...
+go install ./...
