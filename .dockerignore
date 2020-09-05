@@ -1,4 +1,9 @@
 .dockerignore
 .git
 .github
+.gitignore
+deploy.sh
 Dockerfile
+env
+env.example
+README

@@ -4,14 +4,64 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"time"
 )
 
-var errNoProgramName = errors.New("no program name (os.Args empty)")
+const (
+	env_url       = "URL"
+	env_filename  = "FILE"
+	env_delay_min = "DELAY_MIN"
+	env_delay_max = "DELAY_MAX"
+)
 
-func parseArgs(osArgs []string) error {
+var env_var_names = []string{env_url, env_filename, env_delay_min, env_delay_max}
+
+var errNoProgramName = errors.New("no program name (os.Args empty)")
+var logger = log.New(os.Stderr, "UTC ", log.LstdFlags|log.LUTC|log.Lmsgprefix)
+
+type argsT struct {
+	url, filename        string
+	delay_min, delay_max time.Duration
+}
+
+func parseEnv(env map[string]string) (*argsT, error) {
+	args := &argsT{}
+
+	if args.url = env[env_url]; args.url == "" {
+		return nil, errors.New("empty env var: " + env_url)
+	}
+
+	if args.filename = env[env_filename]; args.filename == "" {
+		return nil, errors.New("empty env var: " + env_filename)
+	}
+
+	var err error
+	if args.delay_min, err = time.ParseDuration(env[env_delay_min]); err != nil {
+		return nil, err
+	}
+	if args.delay_max, err = time.ParseDuration(env[env_delay_max]); err != nil {
+		return nil, err
+	}
+
+	if args.delay_min < 0 {
+		return nil, fmt.Errorf("negative %v: %v",
+			env_delay_min, args.delay_min)
+	}
+
+	if args.delay_min > args.delay_max {
+		return nil, fmt.Errorf("%v %v > %v %v",
+			env_delay_min, args.delay_min,
+			env_delay_max, args.delay_max)
+	}
+
+	return args, nil
+}
+
+func parseArgs(osArgs []string, env map[string]string) (*argsT, error) {
 	if len(osArgs) == 0 {
-		return errNoProgramName
+		return nil, errNoProgramName
 	}
 
 	fs := flag.NewFlagSet(osArgs[0], flag.ExitOnError)
@@ -26,33 +76,36 @@ See the README for how to set parameters.
 	}
 
 	if err := fs.Parse(osArgs[1:]); err != nil {
-		return err
+		return nil, err
 	}
 	if fs.NArg() > 0 {
-		return fmt.Errorf("unrecognized arguments: %#v", fs.Args())
+		return nil, fmt.Errorf("unrecognized arguments: %#v", fs.Args())
 	}
-	return nil
+
+	return parseEnv(env)
 }
 
-func errExit(err error) {
-	if len(os.Args) > 0 && os.Args[0] != "" {
-		fmt.Fprint(os.Stderr, os.Args[0], ": ")
+func getEnv() map[string]string {
+	env := map[string]string{}
+	for _, k := range env_var_names {
+		env[k] = os.Getenv(k)
 	}
-	fmt.Fprintln(os.Stderr, "error:", err)
-	os.Exit(1)
+	return env
 }
 
 func main_err() error {
-	err := parseArgs(os.Args)
+	args, err := parseArgs(os.Args, getEnv())
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(args)
 
 	return nil
 }
 
 func main() {
 	if err := main_err(); err != nil {
-		errExit(err)
+		logger.Fatal(err)
 	}
 }
