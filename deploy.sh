@@ -18,6 +18,7 @@ docker stop "$CONTAINER" || true
 docker rm --volumes "$CONTAINER" || true
 
 docker run \
+	--detach \
 	--env-file env \
 	--mount type=volume,source="$VOLUME",destination=/home/user/data \
 	--name "$CONTAINER" \
