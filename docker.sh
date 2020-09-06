@@ -3,7 +3,7 @@
 set -ue -o pipefail
 trap "echo >&2 script '${BASH_SOURCE[0]}' failed" ERR
 
-SCRIPT=`readlink -e "${BASH_SOURCE[0]}"`
+SCRIPT=`readlink -f "${BASH_SOURCE[0]}"`
 SCRIPT_DIR=`dirname "$SCRIPT"`
 cd "$SCRIPT_DIR"
 unset SCRIPT SCRIPT_DIR
