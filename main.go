@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
+	"github.com/jordan-wright/email"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
+	"net/smtp"
 	"os"
 	"time"
 )
@@ -37,8 +40,25 @@ func shouldEmail(filename string, newContent []byte) (bool, error) {
 	return !bytes.Equal(oldContent, newContent), nil
 }
 
-func sendEmail() error {
-	logger.Print("TODO: send email")
+func sendEmail(args *argsT, newContent []byte) error {
+	e := email.NewEmail()
+	e.From = args.email_addr_from
+	e.To = []string{args.email_addr_to}
+	e.Subject = "Page changed: " + args.url
+	e.Text = []byte(args.url)
+	e.HTML = newContent
+
+	addr := args.smtps_host + ":" + args.smtps_port
+	auth := smtp.PlainAuth("", args.smtps_username, args.smtps_password,
+		args.smtps_host)
+	tlsConfig := &tls.Config{ServerName: args.smtps_host}
+
+	if err := e.SendWithTLS(addr, auth, tlsConfig); err != nil {
+		return err
+	}
+
+	logger.Println("email sent from", args.email_addr_from,
+		"to", args.email_addr_to)
 	return nil
 }
 
@@ -54,7 +74,7 @@ func fetchAndEmail(args *argsT) error {
 	}
 
 	if notify {
-		err = sendEmail()
+		err = sendEmail(args, newContent)
 		if err != nil {
 			return err
 		}

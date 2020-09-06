@@ -9,10 +9,16 @@ import (
 // because the map is mutable.
 func getValidEnv() map[string]string {
 	return map[string]string{
-		"URL":       "https://example.com",
-		"FILE":      "some/path/to/file",
-		"DELAY_MIN": "14m30s",
-		"DELAY_MAX": "24h",
+		env_url:             "https://example.com",
+		env_filename:        "some/path/to/file",
+		env_delay_min:       "14m30s",
+		env_delay_max:       "24h",
+		env_smtps_host:      "example.com",
+		env_smtps_port:      "465",
+		env_smtps_username:  "user",
+		env_smtps_password:  "pass",
+		env_email_addr_from: "from@example.com",
+		env_email_addr_to:   "to@example.com",
 	}
 }
 
@@ -56,6 +62,13 @@ func TestParseEnvInvalid(t *testing.T) {
 
 		{env_delay_max, "5m", "DELAY_MIN 14m30s > DELAY_MAX 5m0s"},
 		{env_delay_min, "-37s", "negative DELAY_MIN: -37s"},
+
+		{env_smtps_host, "", "empty env var: " + env_smtps_host},
+		{env_smtps_port, "", "empty env var: " + env_smtps_port},
+		{env_smtps_username, "", "empty env var: " + env_smtps_username},
+		{env_smtps_password, "", "empty env var: " + env_smtps_password},
+		{env_email_addr_from, "", "empty env var: " + env_email_addr_from},
+		{env_email_addr_to, "", "empty env var: " + env_email_addr_to},
 	} {
 		e := getValidEnv()
 		e[tc.k] = tc.v
