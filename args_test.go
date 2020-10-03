@@ -9,16 +9,16 @@ import (
 // because the map is mutable.
 func getValidEnv() map[string]string {
 	return map[string]string{
-		env_url:             "https://example.com",
-		env_filename:        "some/path/to/file",
-		env_delay_min:       "14m30s",
-		env_delay_max:       "24h",
-		env_smtps_host:      "example.com",
-		env_smtps_port:      "465",
-		env_smtps_username:  "user",
-		env_smtps_password:  "pass",
-		env_email_addr_from: "from@example.com",
-		env_email_addr_to:   "to@example.com",
+		envURL:           "https://example.com",
+		envFilename:      "some/path/to/file",
+		envDelayMin:      "14m30s",
+		envDelayMax:      "24h",
+		envSMTPSHost:     "example.com",
+		envSMTPSPort:     "465",
+		envSMTPSUsername: "user",
+		envSMTPSPassword: "pass",
+		envEmailAddrFrom: "from@example.com",
+		envEmailAddrTo:   "to@example.com",
 	}
 }
 
@@ -55,20 +55,20 @@ func TestParseEnvInvalid(t *testing.T) {
 		k, v string
 		want string
 	}{
-		{env_url, "", "empty env var: " + env_url},
-		{env_filename, "", "empty env var: " + env_filename},
-		{env_delay_min, "", `time: invalid duration ""`},
-		{env_delay_max, "17", `time: missing unit in duration "17"`},
+		{envURL, "", "empty env var: " + envURL},
+		{envFilename, "", "empty env var: " + envFilename},
+		{envDelayMin, "", `time: invalid duration ""`},
+		{envDelayMax, "17", `time: missing unit in duration "17"`},
 
-		{env_delay_max, "5m", "DELAY_MIN 14m30s > DELAY_MAX 5m0s"},
-		{env_delay_min, "-37s", "negative DELAY_MIN: -37s"},
+		{envDelayMax, "5m", "DELAY_MIN 14m30s > DELAY_MAX 5m0s"},
+		{envDelayMin, "-37s", "negative DELAY_MIN: -37s"},
 
-		{env_smtps_host, "", "empty env var: " + env_smtps_host},
-		{env_smtps_port, "", "empty env var: " + env_smtps_port},
-		{env_smtps_username, "", "empty env var: " + env_smtps_username},
-		{env_smtps_password, "", "empty env var: " + env_smtps_password},
-		{env_email_addr_from, "", "empty env var: " + env_email_addr_from},
-		{env_email_addr_to, "", "empty env var: " + env_email_addr_to},
+		{envSMTPSHost, "", "empty env var: " + envSMTPSHost},
+		{envSMTPSPort, "", "empty env var: " + envSMTPSPort},
+		{envSMTPSUsername, "", "empty env var: " + envSMTPSUsername},
+		{envSMTPSPassword, "", "empty env var: " + envSMTPSPassword},
+		{envEmailAddrFrom, "", "empty env var: " + envEmailAddrFrom},
+		{envEmailAddrTo, "", "empty env var: " + envEmailAddrTo},
 	} {
 		e := getValidEnv()
 		e[tc.k] = tc.v
