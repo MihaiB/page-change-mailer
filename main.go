@@ -89,7 +89,7 @@ func sleep(delayMin, delayMax time.Duration) {
 	time.Sleep(d)
 }
 
-func main_err() error {
+func mainErr() error {
 	args, err := parseArgs(os.Args, getEnv())
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func main_err() error {
 }
 
 func main() {
-	if err := main_err(); err != nil {
+	if err := mainErr(); err != nil {
 		logger.Fatal(err)
 	}
 }
