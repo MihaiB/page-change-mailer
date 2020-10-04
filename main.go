@@ -42,23 +42,23 @@ func shouldEmail(filename string, newContent []byte) (bool, error) {
 
 func sendEmail(args *argsT, newContent []byte) error {
 	e := email.NewEmail()
-	e.From = args.email_addr_from
-	e.To = []string{args.email_addr_to}
+	e.From = args.emailAddrFrom
+	e.To = []string{args.emailAddrTo}
 	e.Subject = "Page changed: " + args.url
 	e.Text = []byte(args.url)
 	e.HTML = newContent
 
-	addr := args.smtps_host + ":" + args.smtps_port
-	auth := smtp.PlainAuth("", args.smtps_username, args.smtps_password,
-		args.smtps_host)
-	tlsConfig := &tls.Config{ServerName: args.smtps_host}
+	addr := args.smtpsHost + ":" + args.smtpsPort
+	auth := smtp.PlainAuth("", args.smtpsUsername, args.smtpsPassword,
+		args.smtpsHost)
+	tlsConfig := &tls.Config{ServerName: args.smtpsHost}
 
 	if err := e.SendWithTLS(addr, auth, tlsConfig); err != nil {
 		return err
 	}
 
-	logger.Println("email sent from", args.email_addr_from,
-		"to", args.email_addr_to)
+	logger.Println("email sent from", args.emailAddrFrom,
+		"to", args.emailAddrTo)
 	return nil
 }
 
@@ -83,8 +83,8 @@ func fetchAndEmail(args *argsT) error {
 	return ioutil.WriteFile(args.filename, newContent, 0644)
 }
 
-func sleep(delay_min, delay_max time.Duration) {
-	d := delay_min + time.Duration(rand.Int63n(int64(delay_max-delay_min+1)))
+func sleep(delayMin, delayMax time.Duration) {
+	d := delayMin + time.Duration(rand.Int63n(int64(delayMax-delayMin+1)))
 	logger.Println("sleeping for", d.Round(time.Second))
 	time.Sleep(d)
 }
@@ -99,7 +99,7 @@ func main_err() error {
 		if err = fetchAndEmail(args); err != nil {
 			logger.Print(err)
 		}
-		sleep(args.delay_min, args.delay_max)
+		sleep(args.delayMin, args.delayMax)
 	}
 }
 

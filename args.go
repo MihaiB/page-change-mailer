@@ -21,7 +21,7 @@ const (
 	envEmailAddrTo   = "EMAIL_ADDRESS_TO"
 )
 
-var env_var_names = map[string]struct{}{
+var envVarNames = map[string]struct{}{
 	envURL:           {},
 	envFilename:      {},
 	envDelayMin:      {},
@@ -36,7 +36,7 @@ var env_var_names = map[string]struct{}{
 
 func getEnv() map[string]string {
 	env := map[string]string{}
-	for k := range env_var_names {
+	for k := range envVarNames {
 		env[k] = os.Getenv(k)
 	}
 	return env
@@ -45,11 +45,11 @@ func getEnv() map[string]string {
 var errNoProgramName = errors.New("no program name (os.Args empty)")
 
 type argsT struct {
-	url, filename                  string
-	delay_min, delay_max           time.Duration
-	smtps_host, smtps_port         string
-	smtps_username, smtps_password string
-	email_addr_from, email_addr_to string
+	url, filename                string
+	delayMin, delayMax           time.Duration
+	smtpsHost, smtpsPort         string
+	smtpsUsername, smtpsPassword string
+	emailAddrFrom, emailAddrTo   string
 }
 
 func parseEnv(env map[string]string) (*argsT, error) {
@@ -63,39 +63,39 @@ func parseEnv(env map[string]string) (*argsT, error) {
 	}
 
 	var err error
-	if args.delay_min, err = time.ParseDuration(env[envDelayMin]); err != nil {
+	if args.delayMin, err = time.ParseDuration(env[envDelayMin]); err != nil {
 		return nil, err
 	}
-	if args.delay_max, err = time.ParseDuration(env[envDelayMax]); err != nil {
+	if args.delayMax, err = time.ParseDuration(env[envDelayMax]); err != nil {
 		return nil, err
 	}
 
-	if args.delay_min < 0 {
+	if args.delayMin < 0 {
 		return nil, fmt.Errorf("negative %v: %v",
-			envDelayMin, args.delay_min)
+			envDelayMin, args.delayMin)
 	}
-	if args.delay_min > args.delay_max {
+	if args.delayMin > args.delayMax {
 		return nil, fmt.Errorf("%v %v > %v %v",
-			envDelayMin, args.delay_min,
-			envDelayMax, args.delay_max)
+			envDelayMin, args.delayMin,
+			envDelayMax, args.delayMax)
 	}
 
-	if args.smtps_host = env[envSMTPSHost]; args.smtps_host == "" {
+	if args.smtpsHost = env[envSMTPSHost]; args.smtpsHost == "" {
 		return nil, errors.New("empty env var: " + envSMTPSHost)
 	}
-	if args.smtps_port = env[envSMTPSPort]; args.smtps_port == "" {
+	if args.smtpsPort = env[envSMTPSPort]; args.smtpsPort == "" {
 		return nil, errors.New("empty env var: " + envSMTPSPort)
 	}
-	if args.smtps_username = env[envSMTPSUsername]; args.smtps_username == "" {
+	if args.smtpsUsername = env[envSMTPSUsername]; args.smtpsUsername == "" {
 		return nil, errors.New("empty env var: " + envSMTPSUsername)
 	}
-	if args.smtps_password = env[envSMTPSPassword]; args.smtps_password == "" {
+	if args.smtpsPassword = env[envSMTPSPassword]; args.smtpsPassword == "" {
 		return nil, errors.New("empty env var: " + envSMTPSPassword)
 	}
-	if args.email_addr_from = env[envEmailAddrFrom]; args.email_addr_from == "" {
+	if args.emailAddrFrom = env[envEmailAddrFrom]; args.emailAddrFrom == "" {
 		return nil, errors.New("empty env var: " + envEmailAddrFrom)
 	}
-	if args.email_addr_to = env[envEmailAddrTo]; args.email_addr_to == "" {
+	if args.emailAddrTo = env[envEmailAddrTo]; args.emailAddrTo == "" {
 		return nil, errors.New("empty env var: " + envEmailAddrTo)
 	}
 
