@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -32,7 +32,7 @@ func TestShouldEmailCompareContent(t *testing.T) {
 	d := t.TempDir()
 	f := filepath.Join(d, "file")
 	oldContent, newContent := []byte("old"), []byte("new")
-	if err := ioutil.WriteFile(f, oldContent, 0644); err != nil {
+	if err := os.WriteFile(f, oldContent, 0644); err != nil {
 		t.Fatal(err)
 	}
 

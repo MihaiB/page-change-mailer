@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"github.com/jordan-wright/email"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -25,11 +25,11 @@ func fetchPage(url string) ([]byte, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 func shouldEmail(filename string, newContent []byte) (bool, error) {
-	oldContent, err := ioutil.ReadFile(filename)
+	oldContent, err := os.ReadFile(filename)
 	if os.IsNotExist(err) {
 		return false, nil
 	}
@@ -80,7 +80,7 @@ func fetchAndEmail(args *argsT) error {
 		}
 	}
 
-	return ioutil.WriteFile(args.filename, newContent, 0644)
+	return os.WriteFile(args.filename, newContent, 0644)
 }
 
 func sleep(delayMin, delayMax time.Duration) {
